@@ -1,13 +1,21 @@
-- name: AWS Deploy S3
-  # You may pin to the exact commit or the version.
-  # uses: oneyedev/aws-deploy-s3@16e61e78e12904502d31e6c4adbe1f7d58eddaa7
-  uses: oneyedev/aws-deploy-s3@v2
-  with:
-    # AWS Region of S3 Bucket
-    region: ap-south 1
-    # Name of S3 Bucket
-    bucket: githubactiontask
-    # A Local Source Directory to Upload
-    source: # default is ./dist
-    # A Remote Target Directory to Upload
-    target: # default is 
+
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: githubactiontask/s3-sync-action@master
+      with:
+        args: --acl public-read --follow-symlinks --delete
+      env:
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: 'us-west-1'   # optional: defaults to us-east-1
+        SOURCE_DIR: 'public'      # optional: defaults to entire repository
